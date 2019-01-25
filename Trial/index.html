@@ -1,0 +1,23 @@
+<canvas id="c"></canvas>
+
+<script id="2d-vertex-shader" type="notjs">
+  // reciever data from a buffer
+  attribute vec4 a_position;
+
+  void main(){
+    //gl_position == vertex shader
+    gl_position = a_position;
+  }
+
+</script>
+
+<script id ="2d-fragment-shader" type="notjs">
+  //Default Precision is needed pick here
+  precision mediump float;
+
+  void main(){
+    // gl_FragColor
+
+  }
+
+</script>
