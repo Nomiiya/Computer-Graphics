@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+This demonstrates one way to achieve animation.
+I took Angel's Rotating Square 2 and added a color picker using buffered color data.
+This also demonstrates drawing multiple primitives.
+-->
+
+<title>Rotating Square and More with Color Choice</title>
+
+<!-- Vertex shader -->
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec4 vPosition;
+uniform float theta;
+
+attribute vec3 vColor;
+varying vec4 color;
+
+
+void main()
+{
+    //float dd = sqrt(vPosition.x * vPosition.x );
+    float dd = theta/theta;
+    float s = sin( theta);
+    float c = cos( theta);
+
+   gl_PointSize = 10.0;
+
+    gl_Position.x = -s * vPosition.x + c * vPosition.y;
+    gl_Position.y =  s * vPosition.y + c * vPosition.x;
+    gl_Position.z = 0.0;
+    gl_Position.w = 1.0;
+
+    color = vec4(vColor, 1.0);
+
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+varying vec4 color;
+
+
+void main()
+{
+    gl_FragColor = color;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="rotatingSquare2Color.js"></script>
+</head>
+
+<body>
+<div>
+
+DCH:
+This program is based on Angel's rotatingSquare2. It demonstrates
+<ul>
+<li>event handling </li>
+<li>drawing multiple primitives. </li>
+<li>drawing with multiple colors </li>
+<li>color picker using buffered color data </li>
+<li>window on resize </li>
+</ul>
+</div>
+
+<div>
+
+<button id="Direction">Change Rotation Direction</button>
+<button id="ChangeColor">Change Color</button>
+
+
+<select id="Controls" size="3">
+    <option value="0">Toggle Rotation Direction</option>
+    <option value="1">Spin Faster</option>
+    <option value="2">Spin Slower</option>
+</select>
+</div>
+
+<div>
+
+<canvas id="gl-canvas" width="500" height="500" style="border:2px solid #000000;">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+
+</div>
+
+</body>
+</html>
