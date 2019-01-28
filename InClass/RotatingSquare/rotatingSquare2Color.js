@@ -194,11 +194,11 @@ function render()
     // Draw some other primitives
 
 
-//    gl.drawArrays(gl.POINTS, 0, 1); // one point on square
-//    gl.drawArrays(gl.POINTS, 4, 1); // new point
-  //  gl.drawArrays(gl.POINTS, 5, 1);// line vertices
-  //  gl.drawArrays(gl.POINTS, 6, 1);
-  //  gl.drawArrays(gl.LINES, 5, 2);   // line segment
+  gl.drawArrays(gl.POINTS, 0, 1); // one point on square
+  gl.drawArrays(gl.POINTS, 4, 1); // new point
+   gl.drawArrays(gl.POINTS, 5, 1);// line vertices
+   gl.drawArrays(gl.POINTS, 6, 1);
+   gl.drawArrays(gl.LINES, 5, 2);   // line segment
 
 
 
@@ -209,7 +209,7 @@ function render()
 	// This shows that we need to organize the vertex and color buffers,
 	// which might involve duplicating the vertices with the desired color. (There is more more than one way to fix this.)
 
-    //gl.drawArrays(gl.LINES, 0, 6);   // line to all points
+    gl.drawArrays(gl.LINES, 0, 6);   // line to all points
 
 
     setTimeout(

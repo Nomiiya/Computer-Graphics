@@ -32,12 +32,20 @@ window.onload = function init()
 
 	//  Create the square (The order of the vertices is a little unusual. Explained in render() )
 	//
+  /*
     var vertices = [
         vec2(  0,  1),
         vec2(  1,  0 ),
         vec2( -1,  0 ),
         vec2(  0, -1 )
     ];
+  */
+  var vertices = [
+      vec2(  0,  1),
+      vec2(  1,  0 ),
+      vec2( -1,  0 ),
+      vec2(  0, -1 )
+  ];
 
 	// Here is an example of how to debug with print statements
 	// Hit F12 in the browser to open the debug window
