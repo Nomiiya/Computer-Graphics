@@ -15,13 +15,15 @@ var gl;
 //store the vertices
 //Each triplet represents one triangle
 var vertices = [];
+var vert2 = [];
 
 //store a color for each vertex
 var colors = [];
 
 //HW470: control the explosion
 //(Your variables here)
-
+var theta = 0.0;
+var thetaLoc;
 
 //HW470: control the redraw rate
 var delay = 20;
@@ -59,6 +61,13 @@ window.onload = function init()
         vec2(.4, .4),
         vec2(0.0, -0.4),
         vec2(0.4, -0.4),
+    ];
+
+    var sval2 = 0.7;
+    vert2 = [
+      vec2( -sval2, -sval2),
+      vec2( 0.0, sval2),
+      vec2( -sval2, sval2)
     ];
 
 
@@ -105,14 +114,14 @@ window.onload = function init()
     var vbuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vbuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
-
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(vert2), gl.STATIC_DRAW );
     // Associate shader variables for x,y vertices
     var vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
 
 	  //HW470: associate shader explode variable ("Loc" variables defined here)
-
+    thetaLoc = gl.getUniformLocation( program, "theta" );
 
     console.log("Data loaded to GPU -- Now call render");
 
@@ -136,7 +145,7 @@ function render()
 	// You will need to change this to create the exploding outer parts effect
 	// Hint: you will need more than one draw function call
   gl.drawArrays( gl.TRIANGLES, 0, vertices.length );
-
+  gl.drawArrays( gl.TRIANGLES, 0, vert2.length );
 
 
 	//re-render after delay
