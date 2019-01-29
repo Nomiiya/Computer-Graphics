@@ -24,9 +24,10 @@ var colors = [];
 //(Your variables here)
 var theta = 0.0;
 var thetaLoc;
-
+var numY = 0.25;
 //HW470: control the redraw rate
 var delay = 20;
+var direction = true;
 
 // =============== function init ======================
 
@@ -114,7 +115,7 @@ window.onload = function init()
     var vbuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vbuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(vert2), gl.STATIC_DRAW );
+    //gl.bufferData( gl.ARRAY_BUFFER, flatten(vert2), gl.STATIC_DRAW );
     // Associate shader variables for x,y vertices
     var vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 2, gl.FLOAT, false, 0, 0 );
@@ -139,19 +140,26 @@ function render()
 
 
 	//HW470: send uniform(s) to vertex shader
+  console.log(vertices[0], vertices[1],vertices[2]);
 
+  numY += 0.5 ;
+  vertices[0] = vec2(numY, -numY);
+  vertices[1] = vec2(0.0 , numY);
+  vertices[2] = vec2(-numY, -numY);
 
-	//HW470: draw the object
+  //HW470: draw the object
 	// You will need to change this to create the exploding outer parts effect
 	// Hint: you will need more than one draw function call
   gl.drawArrays( gl.TRIANGLES, 0, vertices.length );
-  gl.drawArrays( gl.TRIANGLES, 0, vert2.length );
+  //gl.drawArrays( gl.TRIANGLES, 0, vert2.length );
 
 
 	//re-render after delay
-	setTimeout(function (){requestAnimFrame(render);}, delay);
+//  for(i = 0; i < 10; i++){
+	   setTimeout(function (){requestAnimFrame(render);}, delay);
+//  }
 }
-
+/*
 function drawTriangle(){
     // Make the vertices
     sval = 0.3;
