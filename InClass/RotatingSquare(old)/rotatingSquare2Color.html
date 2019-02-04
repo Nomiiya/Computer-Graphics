@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<!-- 
+<!--
 This demonstrates one way to achieve animation.
 I took Angel's Rotating Square 2 and added a color picker using buffered color data.
 This also demonstrates drawing multiple primitives.
@@ -25,8 +25,7 @@ void main()
     float dd = theta/theta;
     float s = sin( theta);
     float c = cos( theta);
-	
-    
+
    gl_PointSize = 10.0;
 
     gl_Position.x = -s * vPosition.x + c * vPosition.y;
@@ -55,28 +54,19 @@ void main()
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="rotatingSquare2Color.js"></script>
-</head>   
+</head>
 
-<body style="font-family: Arial";>
+<body>
 <div>
 
-<canvas id="gl-canvas" width="500" height="500" style="border:2px solid #000000;">
- 
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
-
-
-<div> 
- 
-
-This program is based on Angel's rotatingSquare codes. It demonstrates 
+DCH:
+This program is based on Angel's rotatingSquare2. It demonstrates
 <ul>
-<li>event handling </li> 
+<li>event handling </li>
 <li>drawing multiple primitives. </li>
 <li>drawing with multiple colors </li>
 <li>color picker using buffered color data </li>
-<li>viewport on resize event (Open the Console to see viewport resize prints)</br>
-Read the"Resize Event Info" section below.</li>
+<li>window on resize </li>
 </ul>
 </div>
 
@@ -93,23 +83,13 @@ Read the"Resize Event Info" section below.</li>
 </select>
 </div>
 
-
-
 <div>
-<h3>Resize Event Info</h3>
-<p> Try resizing the width and/or height of the browser so that it is smaller than the canvas</p>
-<ul> 
-<li>The implementation assumes that the canvas is at the top of the page. </li>
-<li>The canvas is defined with a fixed pixel width and height. Normally, the aspect ratio is one to
-avoid distortion of the geometry.</li>
-<li>Initially, the viewport is set to be equal to the canvas (in the JS code).</li>
-<li>If  the browser is resized so that the height or width is less than the canvas width and height, then a change in the viewport is made. </li>
-<li>The minimum of the width and height of the browser (window.inner{width, height}) is used for the viewport width and height in order to maintain an aspect ratio of one. </li>
-<li>The lower-left corner of the viewport is positioned so the viewport occupies the upper-left part of the canvas.</li>
 
-</ul>
- 
-Author: Dianne Hansford
+<canvas id="gl-canvas" width="500" height="500" style="border:2px solid #000000;">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+
+</div>
 
 </body>
 </html>

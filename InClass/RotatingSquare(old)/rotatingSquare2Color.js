@@ -4,7 +4,7 @@
 // -- event handling
 // -- drawing different primitives (triangle strip, line, point)
 // -- using different colors for each primitive
-// 
+//
 //
 var gl;
 
@@ -33,21 +33,18 @@ var colorindex = 0;
 window.onload = function init()
 {
     var canvas = document.getElementById( "gl-canvas" );
-    
+
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
     //
     //  Configure WebGL
     //
-	// viewport coordinate (x,y) is in normalized device coords; (0,0) is lower-left of canvas
     gl.viewport( 0, 0, canvas.width, canvas.height );
-	
-	// set background color to white; background cleared in render() with gl.clear()
     gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
 
     //  Load shaders and initialize attribute buffers
-    
+
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 
@@ -56,47 +53,43 @@ window.onload = function init()
         vec2(  1,  0 ),
         vec2( -1,  0 ),
         vec2(  0, -1 ),
-        vec2(  -0.6, -0.6),
-        vec2(  0.6, 0.6),
-        vec2( 0.6, -0.6),
-
     ];
 
 	// initialize the colors for the square (using integer index into baseColors array)
 	// also init color for black point and green line segment
 	// (This function called again from event handler "ChangeColor"
 	setcolors(colorindex);
-	
-	 
 
 
-    // Load the data into the GPU    
-    
+
+
+    // Load the data into the GPU
+
     var vBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW);
 
     // Associate out shader variables with our data buffer
-    
+
     var vPosition = gl.getAttribLocation( program, "vPosition");
     gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
-	
+
 	// do same for colors
 	var cBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
-    
+
     var vColor = gl.getAttribLocation( program, "vColor" );
     gl.vertexAttribPointer( vColor, 3, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vColor );
 
 
 
-	// associate shader theta variable    
+	// associate shader theta variable
     thetaLoc = gl.getUniformLocation( program, "theta" );
-    
+
     // Initialize event handlers
     document.getElementById("Direction").onclick = function () {
         direction = !direction;
@@ -111,7 +104,7 @@ window.onload = function init()
 
     };
 
-    
+
     document.getElementById("Controls" ).onclick = function(event) {
         switch( event.srcElement.index ) {
           case 0:
@@ -142,10 +135,8 @@ window.onload = function init()
             break;
         }
     };
-	
+
 	window.onresize = function() {
-		
-		// find the minimum browser dimension
 		var min = innerWidth;
 		if(innerHeight < min) {
 			min = innerHeight;
@@ -154,19 +145,15 @@ window.onload = function init()
 		console.log("canvas width = ",canvas.width,"  height = ",canvas.height);
 		console.log("innerWidth = ",innerWidth,"  innerHeight = ",innerHeight);
 		console.log("min = ",min);
-		
-		// change the viewport if the resize interferes with the canvas
-		// min dimension is new viewport dimension
-		// place lower-left corner of viewport as high as possible
-		// ( viewport coordinate (x,y) is in normalized device coords; (0,0) is lower-left of canvas)
+
 		if(min < canvas.width || min < canvas.height) {
 			gl.viewport(0, canvas.height - min, min, min);
-			console.log("set viewport upper left location to (0,",canvas.height - min,")  ");
+			console.log("set viewport to 0  ",canvas.height - min, "  ",min," ",min);
 		}
-		
+
 	};
-	
-	
+
+
     render();
 };
 
@@ -204,30 +191,28 @@ function render()
 
 	// Using points 0 ... 3, draw triangle strip
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    
     // Draw some other primitives
 
-	  
-    gl.drawArrays(gl.POINTS, 0, 1); // one point on square
-    gl.drawArrays(gl.POINTS, 4, 1); // new point  
-    gl.drawArrays(gl.POINTS, 5, 1);// line vertices
-    gl.drawArrays(gl.POINTS, 6, 1);
-    gl.drawArrays(gl.LINE_STRIP, 4, 3);   // line segment
-	 
-	 
+
+  gl.drawArrays(gl.POINTS, 0, 1); // one point on square
+  gl.drawArrays(gl.POINTS, 4, 1); // new point
+   gl.drawArrays(gl.POINTS, 5, 1);// line vertices
+   gl.drawArrays(gl.POINTS, 6, 1);
+   gl.drawArrays(gl.LINES, 5, 2);   // line segment
+
+
 
 	 // Play: comment out the other draw commands and uncomment out this one
-    // Here is an example of something we don't want. 
+    // Here is an example of something we don't want.
 	// If we want to draw a polyline of one color, we need to have the vertices and colors corresponding in the GPU.
-	// The set-up here does not support this ...  
-	// This shows that we need to organize the vertex and color buffers, 
+	// The set-up here does not support this ...
+	// This shows that we need to organize the vertex and color buffers,
 	// which might involve duplicating the vertices with the desired color. (There is more more than one way to fix this.)
-	
-    //gl.drawArrays(gl.LINE_STRIP, 0, 6);   // line to all points
+
+    gl.drawArrays(gl.LINES, 0, 6);   // line to all points
 
 
     setTimeout(
         function (){requestAnimFrame(render);}, delay
     );
 }
-
