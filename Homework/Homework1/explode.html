@@ -14,6 +14,8 @@ attribute vec4 vPosition;
 
 //HW470: uniforms to control explosion and color change
 //uniform
+uniform float variation;
+uniform float colorVariation;
 
 //incoming color attribute and varying for fragment shader
 attribute vec3 vColor;
@@ -24,13 +26,14 @@ main()
 {
 	// HW470: explode the geometry x,y coords and set z and w
 	// Change the code below.
-	gl_Position.x = vPosition.x;
-	gl_Position.y = vPosition.y;
-  gl_Position.z = 0.0;
-  gl_Position.w = 1.0;
+	//* clamp(variation, 0.0, 1.0);
+	gl_Position.x = vPosition.x * clamp(variation, 0.0, 2.0);
+	gl_Position.y = vPosition.y * clamp(variation, 0.0, 2.0);
+	gl_Position.z = 0.0;
+	gl_Position.w = 1.0;
 
 	//HW470: create a parameter to vary the color based on the explodeFactor
-
+	// I made this parameter uptop, gave me an error when i put it here.
 
 	//HW470: Modify color with factor and clip to max valid value
 	float red = vColor.r;
@@ -39,8 +42,9 @@ main()
 
 	float blue = vColor.b;
 
-    //set the varying color for the fragment shader
-    color = vec4(red, green, blue, 1.0);
+  //set the varying color for the fragment shader
+	color = mix(vec4(vColor, 1.0), vec4(1.0), clamp(colorVariation, 0.0, 1.0));
+
 }
 </script>
 
@@ -62,6 +66,7 @@ main()
 {
    //pass color to fragment shader
     gl_FragColor = color;
+
 }
 </script>
 
@@ -79,14 +84,19 @@ main()
 
 <strong>Author: </strong>Mark Terence Buenaflor
 &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-<strong>Date: </strong>January 2019</br>
+<strong>Date: </strong>January 29, 2019</br>
 
 </br>
-<strong>Description: </strong></br>This program .... (HW470: add description here)
+<strong>Description: </strong></br>This program explodes from the middle in a sort of "hallway style look" using size illusions.
+I kept adding thinner and thinner triangles to add to the illusion.
 </br>
 </br>
 <strong>How did you map color from the initial (r,g,b) to white?</strong></br>
-HW470: describe what you did
+I changed the color by using the glsl function called mix, i found out about it through some research.
+I clamped both the size and the color so that it won't go beyond the box.</br>
+HW470:</br>
+I added to the demo that was given to us since it looked like the explosion looks like its pointing towards you as it fades out.
+This way it looks like a coridoor with the sides looking like curtains and the middle looking like carpet patterns.
 </br>
 </br>
 <strong>Resources: </strong>Prof. Angel's codes. (HW470: add anything else that you used)</br>
