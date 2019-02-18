@@ -19,7 +19,7 @@ var thetaLoc;
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
-    
+
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
@@ -27,7 +27,7 @@ window.onload = function init()
 
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
-    
+
     gl.enable(gl.DEPTH_TEST);
 
     //
@@ -35,7 +35,7 @@ window.onload = function init()
     //
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
-    
+
     var cBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, cBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW );
@@ -52,8 +52,8 @@ window.onload = function init()
     gl.vertexAttribPointer( vPosition, 3, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
 
-    thetaLoc = gl.getUniformLocation(program, "theta"); 
-    
+    thetaLoc = gl.getUniformLocation(program, "theta");
+
     //event listeners for buttons
     
     document.getElementById( "xButton" ).onclick = function () {
@@ -68,7 +68,7 @@ window.onload = function init()
         console.log("pressed z");
         axis = zAxis;
     };
-        
+
     render();
 }
 
@@ -82,7 +82,7 @@ function colorCube()
     quad( 5, 4, 0, 1 );
 }
 
-function quad(a, b, c, d) 
+function quad(a, b, c, d)
 {
     var vertices = [
         vec3( -0.5, -0.5,  0.5 ),
@@ -109,9 +109,9 @@ function quad(a, b, c, d)
     // We need to parition the quad into two triangles in order for
     // WebGL to be able to render it.  In this case, we create two
     // triangles from the quad indices
-    
+
     //vertex color assigned by the index of the vertex
-    
+
     var indices = [ a, b, c, a, c, d ];
 
     console.log("indices = ",indices);
@@ -119,10 +119,10 @@ function quad(a, b, c, d)
     for ( var i = 0; i < indices.length; ++i ) {
         points.push( vertices[indices[i]] );
         //colors.push( vertexColors[indices[i]] );
-    
-        // for solid colored faces use 
+
+        // for solid colored faces use
         colors.push(vertexColors[a]);
-        
+
     }
 }
 
@@ -136,7 +136,7 @@ function render()
     gl.uniform3fv(thetaLoc, theta);
 
     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
-	
+
 	// This works in cubev because of the data structure
 	// Would have to send vertices down differently to make it work here.
 	//gl.drawArrays( gl.LINE_LOOP, 0, 4 );
@@ -144,4 +144,3 @@ function render()
 
     requestAnimFrame( render );
 }
-
