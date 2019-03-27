@@ -4,6 +4,9 @@ var gl;
 
 var NumVertices  = 36;
 
+
+
+
 var points = [];
 var colors = [];
 
@@ -54,46 +57,33 @@ window.onload = function init()
 
     thetaLoc = gl.getUniformLocation(program, "theta");
 
-    //event listeners for buttons
-
-    document.getElementById( "xButton" ).onclick = function () {
-        console.log("pressed x");
-        axis = xAxis;
-    };
-    document.getElementById( "yButton" ).onclick = function () {
-       console.log("pressed y");
-        axis = yAxis;
-    };
-    document.getElementById( "zButton" ).onclick = function () {
-        console.log("pressed z");
-        axis = zAxis;
-    };
-
     render();
 }
 
 function colorCube()
 {
-    quad( 1, 0, 3, 2 );
-    quad( 2, 3, 7, 6 );
-    quad( 3, 0, 4, 7 );
-    quad( 6, 5, 1, 2 );
-    quad( 4, 5, 6, 7 );
-    quad( 5, 4, 0, 1 );
+  quad( 1, 0, 3, 2 );
+  quad( 2, 3, 7, 6 );
+  quad( 3, 0, 4, 7 );
+  quad( 6, 5, 1, 2 );
+  quad( 4, 5, 6, 7 );
+  quad( 5, 4, 0, 1 );
 }
 
 function quad(a, b, c, d)
 {
-    var vertices = [
-        vec3( -0.5, -0.5,  0.5 ),
-        vec3( -0.5,  0.5,  0.5 ),
-        vec3(  0.5,  0.5,  0.5 ),
-        vec3(  0.5, -0.5,  0.5 ),
-        vec3( -0.5, -0.5, -0.5 ),
-        vec3( -0.5,  0.5, -0.5 ),
-        vec3(  0.5,  0.5, -0.5 ),
-        vec3(  0.5, -0.5, -0.5 )
-    ];
+  var vertices = [
+    vec3( 0.0, 0.0,  0.0),
+    vec3( 0.0, 1.0,  0.0 ),
+    vec3( 1.0, 1.0,  0.0 ),
+    vec3( 1.0, 0.0,  0.0 ),
+    vec3( 0.0, 0.0, -1.0 ),
+    vec3( 0.0, 1.0, -1.0),
+    vec3( 1.0, 1.0, -1.0 ),
+    vec3( 1.0, 0.0, -1.0 )
+  ];
+
+    var oneColor = [ 0.0, 0.5, 0.2, 1.0 ];
 
     var vertexColors = [
         [ 0.0, 0.0, 0.0, 1.0 ],  // black
@@ -102,7 +92,7 @@ function quad(a, b, c, d)
         [ 0.0, 1.0, 0.0, 1.0 ],  // green
         [ 0.0, 0.0, 1.0, 1.0 ],  // blue
         [ 1.0, 0.0, 1.0, 1.0 ],  // magenta
-        [ 1.0, 1.0, 1.0, 1.0 ],  // white
+        [ 0.5, 1.0, 0.5, 1.0 ],  // white
         [ 0.0, 1.0, 1.0, 1.0 ]   // cyan
     ];
 
@@ -130,11 +120,8 @@ function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    theta[axis] += 0.2;
-    console.log("theta = ",theta);
-
+    theta[axis] += 0.0;
     gl.uniform3fv(thetaLoc, theta);
-
     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
 
 	// This works in cubev because of the data structure
