@@ -1,4 +1,4 @@
-
+// Mark Buenaflor
 var canvas;
 var gl;
 
@@ -73,14 +73,14 @@ function colorCube()
 function quad(a, b, c, d)
 {
   var vertices = [
-      vec3( -0.25, -0.25,  0.25 ),
-      vec3( -0.25,  0.25,  0.25 ),
-      vec3(  0.25,  0.25,  0.25 ),
-      vec3(  0.25, -0.25,  0.25 ),
-      vec3( -0.25, -0.25, -0.25 ),
-      vec3( -0.25,  0.25, -0.25 ),
-      vec3(  0.25,  0.25, -0.25 ),
-      vec3(  0.25, -0.25, -0.25 )
+    vec3( 0.0, 0.0,  0.0),
+    vec3( 0.0, 1.0,  0.0 ),
+    vec3( 1.0, 1.0,  0.0 ),
+    vec3( 1.0, 0.0,  0.0 ),
+    vec3( 0.0, 0.0, -1.0 ),
+    vec3( 0.0, 1.0, -1.0),
+    vec3( 1.0, 1.0, -1.0 ),
+    vec3( 1.0, 0.0, -1.0 )
   ];
 
     var oneColor = [ 0.0, 0.5, 0.2, 1.0 ];
@@ -120,11 +120,8 @@ function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    theta[axis] += 0.2;
-    console.log("theta = ",theta);
-
+    theta[axis] += 0.0;
     gl.uniform3fv(thetaLoc, theta);
-
     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
 
 	// This works in cubev because of the data structure

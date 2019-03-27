@@ -55,7 +55,7 @@ window.onload = function init()
     thetaLoc = gl.getUniformLocation(program, "theta");
 
     //event listeners for buttons
-    
+
     document.getElementById( "xButton" ).onclick = function () {
         console.log("pressed x");
         axis = xAxis;

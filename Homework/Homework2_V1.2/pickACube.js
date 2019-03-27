@@ -4,6 +4,9 @@ var gl;
 
 var NumVertices  = 36;
 
+
+
+
 var points = [];
 var colors = [];
 
@@ -12,22 +15,9 @@ var yAxis = 1;
 var zAxis = 2;
 
 var axis = 0;
-
-var axis2 = 1;
-
 var theta = [ 0, 0, 0 ];
-var beta = [20, 0, 0];
 
-var betaLoc;
 var thetaLoc;
-
-var rx;
-var ry;
-var rz;
-var rxLoc;
-var ryLoc;
-var rzLoc;
-
 
 window.onload = function init()
 {
@@ -36,14 +26,16 @@ window.onload = function init()
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
-    createCube();
+    colorCube();
 
     gl.viewport( 0, 0, canvas.width, canvas.height );
     gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
 
     gl.enable(gl.DEPTH_TEST);
 
+    //
     //  Load shaders and initialize attribute buffers
+    //
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 
@@ -64,41 +56,34 @@ window.onload = function init()
     gl.enableVertexAttribArray( vPosition );
 
     thetaLoc = gl.getUniformLocation(program, "theta");
-    betaLoc = gl.getUniformLocation(program, "beta");
-    rxLoc = gl.getUniformLocation(program, "rx");
-    ryLoc = gl.getUniformLocation(program, "ry");
-    rzLoc = gl.getUniformLocation(program, "rz");
+
     render();
 }
 
-var vertices = [
-  vec3( -0.5, -0.5,  0.5 ),
-  vec3( -0.5,  0.5,  0.5 ),
-  vec3(  0.5,  0.5,  0.5 ),
-  vec3(  0.5, -0.5,  0.5 ),
-  vec3( -0.5, -0.5, -0.5 ),
-  vec3( -0.5,  0.5, -0.5 ),
-  vec3(  0.5,  0.5, -0.5 ),
-  vec3(  0.5, -0.5, -0.5 )
-];
-
-function createCube()
+function colorCube()
 {
-    quad( 1, 0, 3, 2 );
-    quad( 2, 3, 7, 6 );
-    quad( 3, 0, 4, 7 );
-    quad( 6, 5, 1, 2 );
-    quad( 4, 5, 6, 7 );
-    quad( 5, 4, 0, 1 );
+  quad( 1, 0, 3, 2 );
+  quad( 2, 3, 7, 6 );
+  quad( 3, 0, 4, 7 );
+  quad( 6, 5, 1, 2 );
+  quad( 4, 5, 6, 7 );
+  quad( 5, 4, 0, 1 );
 }
 
 function quad(a, b, c, d)
 {
+  var vertices = [
+    vec3( 0.0, 0.0,  0.0),
+    vec3( 0.0, 1.0,  0.0 ),
+    vec3( 1.0, 1.0,  0.0 ),
+    vec3( 1.0, 0.0,  0.0 ),
+    vec3( 0.0, 0.0, -1.0 ),
+    vec3( 0.0, 1.0, -1.0),
+    vec3( 1.0, 1.0, -1.0 ),
+    vec3( 1.0, 0.0, -1.0 )
+  ];
 
-    // We need to partition the quad into two triangles in order for
-    // WebGL to be able to render it.  In this case, we create two
-    // triangles from the quad indices
-    //vertex color assigned by the index of the vertex
+    var oneColor = [ 0.0, 0.5, 0.2, 1.0 ];
 
     var vertexColors = [
         [ 0.0, 0.0, 0.0, 1.0 ],  // black
@@ -107,36 +92,42 @@ function quad(a, b, c, d)
         [ 0.0, 1.0, 0.0, 1.0 ],  // green
         [ 0.0, 0.0, 1.0, 1.0 ],  // blue
         [ 1.0, 0.0, 1.0, 1.0 ],  // magenta
-        [ 1.0, 1.0, 1.0, 1.0 ],  // white
+        [ 0.5, 1.0, 0.5, 1.0 ],  // white
         [ 0.0, 1.0, 1.0, 1.0 ]   // cyan
     ];
+
+    // We need to parition the quad into two triangles in order for
+    // WebGL to be able to render it.  In this case, we create two
+    // triangles from the quad indices
+
+    //vertex color assigned by the index of the vertex
+
     var indices = [ a, b, c, a, c, d ];
 
-    //console.log("CreateCube: indices = ",indices);
+    console.log("indices = ",indices);
 
     for ( var i = 0; i < indices.length; ++i ) {
         points.push( vertices[indices[i]] );
-		    colors.push(vertexColors[a]);
+        //colors.push( vertexColors[indices[i]] );
+
+        // for solid colored faces use
+        colors.push(vertexColors[a]);
+
     }
 }
+
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  
-
-    theta[axis] += 0.2;
-    //console.log("theta = ",theta);
+    theta[axis] += 0.0;
     gl.uniform3fv(thetaLoc, theta);
     gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
 
+	// This works in cubev because of the data structure
+	// Would have to send vertices down differently to make it work here.
+	//gl.drawArrays( gl.LINE_LOOP, 0, 4 );
+	//gl.drawArrays( gl.LINE_LOOP, 4, 4 );
 
-    beta[1] += 0.2;
-    //console.log("beta = ",beta);
-    gl.uniform3fv(betaLoc, beta);
-    gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
-
-    //gl.drawArrays( gl.TRIANGLES, 0, NumVertices );
-    //gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW );
     requestAnimFrame( render );
 }
