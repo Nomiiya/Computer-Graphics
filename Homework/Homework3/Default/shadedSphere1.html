@@ -21,7 +21,7 @@ main()
 {
 	vec4 pos4D = vec4(vPosition, 1.0);
 	vec4 nor4D = vec4(vNormal, 0.0);
-
+	
       //compute lighting in eye coordinates
     vec3 pos = (modelViewMatrix * pos4D).xyz;
     vec3 light = lightPosition.xyz;
@@ -33,7 +33,7 @@ main()
 
     // halfway vector
     vec3 H = normalize( L + E );
-
+	
     // Transform vertex normal into eye coordinates
     vec3 N = normalize( (modelViewMatrix*nor4D).xyz);
 
@@ -45,32 +45,30 @@ main()
 
     float Ks = pow( max(dot(N, H), 0.0), shininess );
     vec4  specular = Ks * specularProduct;
-
+    
     if( dot(L, N) < 0.0 ) {
 	specular = vec4(0.0, 0.0, 0.0, 1.0);
-    }
+    } 
+	
+	
 
-
-		gl_PointSize = 10.0;
     gl_Position = projectionMatrix * modelViewMatrix * pos4D;
-
-	// play
+    
+	// play  
 	//diffuse = vec4(0.0, 0.0, 0.0, 1.0);
 	//ambient = vec4(0.0, 0.0, 0.0, 1.0);
 	//specular = vec4(0.0, 0.0, 0.0, 1.0);
-
+	
     fColor = ambient + diffuse +specular;
-
-
+	
+	
 
     fColor.a = 1.0;
 }
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
-#ifdef GL_ES
-precision highp float;
-#endif
+
 precision mediump float;
 
 varying vec4 fColor;
