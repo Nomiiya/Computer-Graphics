@@ -93,7 +93,9 @@ var perspProj =
 	far:  10
  }
 /////
-
+//// Texture Initialization
+var positionLocation, texcoordLocation;
+////
 
 function triangle(a, b, c) {
 
@@ -139,6 +141,8 @@ function tetrahedron(a, b, c, d, n) {
 	// comment out next line to create an open object
     //divideTriangle(a, c, d, n);
 }
+
+
 
 window.onload = function init() {
 
@@ -198,7 +202,10 @@ window.onload = function init() {
     gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
-
+		// Texture
+		gl.enableVertexAttribArray(texcoordLocation);
+		gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+		setTexcoords(gl);
     // Mouse
     // init modelview and projection
 	  mvMatrix = lookAt(viewer.eye, viewer.at , viewer.up);
@@ -206,6 +213,10 @@ window.onload = function init() {
 
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
+
+		positionLocation = gl.getAttribLocation(program, "a_position");
+		texcoordLocation = gl.getAttribLocation(program, "a_texcoord");
+
 
     document.getElementById("Button0").onclick = function(){
 		radius *= 2.0;
@@ -252,6 +263,7 @@ window.onload = function init() {
        "lightPosition"),flatten(lightPosition) );
     gl.uniform1f( gl.getUniformLocation(program,
        "shininess"),materialShininess );
+
 
 	console.log("light position = ",lightPosition);
   // ========================== Camera control via mouse ============================================
