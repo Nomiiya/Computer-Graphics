@@ -93,7 +93,145 @@ var perspProj =
 	far:  10
  }
 /////
+//// Texture Initialization
+var positionLocation, texcoordLocation;
 
+function setTexcoords(gl){
+	gl.bufferData(
+       gl.ARRAY_BUFFER,
+       new Float32Array([
+				 // left column front
+        0, 0,
+        0, 1,
+        1, 0,
+        0, 1,
+        1, 1,
+        1, 0,
+
+        // top rung front
+        0, 0,
+        0, 1,
+        1, 0,
+        0, 1,
+        1, 1,
+        1, 0,
+
+        // middle rung front
+        0, 0,
+        0, 1,
+        1, 0,
+        0, 1,
+        1, 1,
+        1, 0,
+
+        // left column back
+        0, 0,
+        1, 0,
+        0, 1,
+        0, 1,
+        1, 0,
+        1, 1,
+
+        // top rung back
+        0, 0,
+        1, 0,
+        0, 1,
+        0, 1,
+        1, 0,
+        1, 1,
+
+        // middle rung back
+        0, 0,
+        1, 0,
+        0, 1,
+        0, 1,
+        1, 0,
+        1, 1,
+
+        // top
+        0, 0,
+        1, 0,
+        1, 1,
+        0, 0,
+        1, 1,
+        0, 1,
+
+        // top rung right
+        0, 0,
+        1, 0,
+        1, 1,
+        0, 0,
+        1, 1,
+        0, 1,
+
+        // under top rung
+        0, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 1,
+        1, 0,
+
+        // between top rung and middle
+        0, 0,
+        1, 1,
+        0, 1,
+        0, 0,
+        1, 0,
+        1, 1,
+
+        // top of middle rung
+        0, 0,
+        1, 1,
+        0, 1,
+        0, 0,
+        1, 0,
+        1, 1,
+
+        // right of middle rung
+        0, 0,
+        1, 1,
+        0, 1,
+        0, 0,
+        1, 0,
+        1, 1,
+
+        // bottom of middle rung.
+        0, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 1,
+        1, 0,
+
+        // right of bottom
+        0, 0,
+        1, 1,
+        0, 1,
+        0, 0,
+        1, 0,
+        1, 1,
+
+        // bottom
+        0, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 1,
+        1, 0,
+
+        // left side
+        0, 0,
+        0, 1,
+        1, 1,
+        0, 0,
+        1, 1,
+        1, 0]),
+        gl.STATIC_DRAW);
+
+}
+
+////
 
 function triangle(a, b, c) {
 
@@ -140,6 +278,8 @@ function tetrahedron(a, b, c, d, n) {
     //divideTriangle(a, c, d, n);
 }
 
+
+
 window.onload = function init() {
 
     canvas = document.getElementById( "gl-canvas" );
@@ -162,7 +302,7 @@ window.onload = function init() {
     //  Load shaders and initialize attribute buffers
     //
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
-    gl.useProgram( program );
+    gl.useProgram(program);
 
     /// MOUSE Mouse
     var diff = subtract(viewer.eye,viewer.at);
@@ -198,7 +338,10 @@ window.onload = function init() {
     gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
-
+		// Texture
+		gl.enableVertexAttribArray(texcoordLocation);
+	  gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+		setTexcoords(gl);
     // Mouse
     // init modelview and projection
 	  mvMatrix = lookAt(viewer.eye, viewer.at , viewer.up);
@@ -206,6 +349,10 @@ window.onload = function init() {
 
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
+
+		positionLocation = gl.getAttribLocation(program, "a_position");
+		texcoordLocation = gl.getAttribLocation(program, "a_texcoord");
+
 
     document.getElementById("Button0").onclick = function(){
 		radius *= 2.0;
@@ -252,6 +399,7 @@ window.onload = function init() {
        "lightPosition"),flatten(lightPosition) );
     gl.uniform1f( gl.getUniformLocation(program,
        "shininess"),materialShininess );
+
 
 	console.log("light position = ",lightPosition);
   // ========================== Camera control via mouse ============================================
