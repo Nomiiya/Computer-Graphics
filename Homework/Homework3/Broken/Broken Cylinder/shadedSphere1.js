@@ -93,17 +93,121 @@ var perspProj =
 	far:  10
  }
 /////
+// TEXTURE
+var texSize = 64;
+var image;
+
+var image1 = new Array()
+    for (var i =0; i<texSize; i++)  image1[i] = new Array();
+    for (var i =0; i<texSize; i++)
+        for ( var j = 0; j < texSize; j++)
+           image1[i][j] = new Float32Array(4);
+    for (var i =0; i<texSize; i++) for (var j=0; j<texSize; j++) {
+        var c = (((i & 0x8) == 0) ^ ((j & 0x8)  == 0));
+        image1[i][j] = [c, c, c, 1];
+    }
+
+var image2 = new Uint8Array(4*texSize*texSize);
+		for ( var i = 0; i < texSize; i++ )
+		   for ( var j = 0; j < texSize; j++ )
+		      for(var k =0; k<4; k++)
+		         image2[4*texSize*i+4*j+k] = 255*image1[i][j][k];
+
+var numChecks = 64;
+
+var image5 = new Uint8Array(4*texSize*texSize);
+ // Create a checkerboard pattern
+		for ( var i = 0; i < texSize; i++ ) {
+				for ( var j = 0; j <texSize; j++ ) {
+						var patchy = Math.floor(j/(texSize/numChecks));
+						if(patchy%2) c = 140;
+						else c = 0;
+						image5[5*i*texSize+4*j] = 251*Math.tan(0.1*i*j);
+						image5[5*i*texSize+4*j+1] = c*Math.tan(0.1*i*j);
+						image5[5*i*texSize+4*j+2] = c*Math.tan(0.1*i*j);
+						image5[5*i*texSize+4*j+3] = 255;
+				}
+	}
+	var image6 = new Uint8Array(4*texSize*texSize);
+	// Create a checkerboard pattern
+	for ( var i = 0; i < texSize; i++ ) {
+			for ( var j = 0; j <texSize; j++ ) {
+					image6[4*i*texSize+4*j] = 200+127*Math.sin(0.1*i*j);
+					image6[4*i*texSize+4*j+1] = 127+127*Math.sin(0.1*i*j);
+					image6[4*i*texSize+4*j+2] = 129+127*Math.sin(0.1*i*j);
+					image6[4*i*texSize+4*j+3] = 255;
+				 }
+	}
+
+image = image2;
+var texCoordsArray = [];
+
+// original texture coords
+var texCoord2 = [
+    vec2(0, 0),
+    vec2(0, 1),
+    vec2(1, 1),
+    vec2(1, 0)
+];
+
+// magnify texture (make squares larger)
+var texCoord1 = [
+    vec2(0, 0),
+    vec2(0, 0.5),
+    vec2(0.5, 0.5),
+    vec2(0.5, 0)
+];
+// extrapolate coords -- use wrap or clamped setting below
+// default is repeat
+var texCoord = [
+    vec2(0, 0),
+    vec2(0, 2.0),
+    vec2(2.0, 2.0),
+    vec2(2.0, 0)
+];
+
+function configureTexture(myimage) {
+
+    texture = gl.createTexture();
+    gl.activeTexture( gl.TEXTURE0 );
+    gl.bindTexture( gl.TEXTURE_2D, texture );
+
+	// flip is not necessary for checkerboard -- this is for input formats like gif
+    //gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+	// this is set up for "image2" which is unsigned byte
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, texSize, texSize, 0,
+    gl.RGBA, gl.UNSIGNED_BYTE, myimage);
+
+    gl.generateMipmap( gl.TEXTURE_2D );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,
+    gl.NEAREST_MIPMAP_LINEAR );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
+
+	// Turn on clamp tex coord if outside of [0,1]
+	// -- here is example in s-dir can do in t-dir too
+	// default is REPEAT (so commenting out with switch to that mode)
+	//gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
+	gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
+}
+//
 
 
 function triangle(a, b, c) {
 
      normalsArray.push(a);
+		 texCoordsArray.push(texCoord[0]);
      normalsArray.push(b);
+		 texCoordsArray.push(texCoord[1]);
      normalsArray.push(c);
+		 texCoordsArray.push(texCoord[2]);
 
      pointsArray.push(a);
+		 texCoordsArray.push(texCoord[0]);
      pointsArray.push(b);
+		 texCoordsArray.push(texCoord[2]);
      pointsArray.push(c);
+		 texCoordsArray.push(texCoord[3]);
 
      index += 3;
 }
@@ -134,15 +238,58 @@ function divideTriangle(a, b, c, count) {
 
 function tetrahedron(a, b, c, d, n) {
     divideTriangle(a, b, c, n);
-    divideTriangle(d, c, b, n);
+    //divideTriangle(d, c, b, n);
     divideTriangle(a, d, b, n);
-	// comment out next line to create an open object
+		//comment out next line to create an open object
     //divideTriangle(a, c, d, n);
+		//divideTriangle(a, a, a, n);
 }
 
+
+
+// =============== CYLINDER FUNCTIONS ======================
+var vertexCylinderBuffer = null; // buffer for the open cylinder
+var cylinderVertices = [];
+var cylinderSegments = 32;
+
+function addPoints(segment){
+	a = 0, b = 0, c = 0; // origin
+	r = 1.0; g = 1.0; b = 1.0; al =1.0;
+	rbt = 1.0; gbt = 0.0; bbt =0.0;
+	theta = (Math.PI/180) * (360/segment);
+
+	// Get it to all sides, essentially rotating it
+	for (i = 0; i <= segment; i++){
+		x = Math.cos(theta * i);
+		z = Math.sin(theta * i);
+
+		cylinderVertices.push(x, c, z);
+		cylinderVertices.push(r,g,b,al);
+		cylinderVertices.push(x, c+2, z);
+		cylinderVertices.push(r,g,b,al);
+
+	}
+}
+
+function drawCylinder(){
+	var repeat = (3+4)*4;
+
+	gl.bindBuffer(gl.ARRAY_BUFFER, vertexCylinderBuffer);
+	a_position = gl.getAttribLocation(program, 'a_position');
+	gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, repeat, 0);
+	gl.enableVertexAttribArray(a_position);
+
+	var colorOff = 3*4;
+	a_Color = gl.getAttribLocation(program, 'a_Color');
+	gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, stride, colorOffset );
+	gl.enableVertexAttribArray(a_Color);
+
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCylinderBuffer.numberOfVertices);
+}
 window.onload = function init() {
 
     canvas = document.getElementById( "gl-canvas" );
+
 
     ///MOUSE Mouse
     var messageLookEye = document.getElementById( "lookEye" );
@@ -173,20 +320,40 @@ window.onload = function init() {
     diffuseProduct = mult(lightDiffuse, materialDiffuse);
     specularProduct = mult(lightSpecular, materialSpecular);
 
-	console.log("Ambient products = ",ambientProduct);
-	console.log("Diffuse products = ",diffuseProduct);
-	console.log("Specular products = ",specularProduct);
+		console.log("Ambient products = ",ambientProduct);
+		console.log("Diffuse products = ",diffuseProduct);
+		console.log("Specular products = ",specularProduct);
 
     tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
 
+		//==================== CYLINDER BUFFERS ===========================
+		addPoints(cylinderSegments);
+		cylinderArray = new Float32Array(cylinderVertices);
 
+		vertexCylinderBuffer = gl.createBuffer();
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexCylinderBuffer);
+		gl.bufferData(gl.ARRAY_BUFFER, cylinderVertices, gl.STATIC_DRAW);
+		vertexCylinderBuffer.numberOfVertices = cylinderVertices.length/7;
+		gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+		var repeat = (3+4)*4;
+
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexCylinderBuffer);
+		a_position = gl.getAttribLocation(program, 'a_position');
+		gl.vertexAttribPointer(a_position, 3, gl.FLOAT, false, repeat, 0);
+		gl.enableVertexAttribArray(a_position);
+
+		var colorOff = 3*4;
+		a_Color = gl.getAttribLocation(program, 'a_Color');
+		gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, repeat, colorOff );
+		gl.enableVertexAttribArray(a_Color);
 
     var nBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
     gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
 
     var vNormal = gl.getAttribLocation( program, "vNormal" );
-	console.log("vNormal = ",vNormal);
+		console.log("vNormal = ",vNormal);
     gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vNormal);
 
@@ -198,7 +365,16 @@ window.onload = function init() {
     gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
 
+		var tBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, tBuffer);
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW );
+    var vTexCoord = gl.getAttribLocation( program, "vTexCoord");
+    gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vTexCoord);
 
+
+
+		//configureTexture(image2);
     // Mouse
     // init modelview and projection
 	  mvMatrix = lookAt(viewer.eye, viewer.at , viewer.up);
@@ -207,6 +383,7 @@ window.onload = function init() {
     modelViewMatrixLoc = gl.getUniformLocation( program, "modelViewMatrix" );
     projectionMatrixLoc = gl.getUniformLocation( program, "projectionMatrix" );
 
+		/*
     document.getElementById("Button0").onclick = function(){
 		radius *= 2.0;
 		console.log("radius = ",radius);
@@ -225,6 +402,7 @@ window.onload = function init() {
     document.getElementById("Button3").onclick = function(){theta -= dr;};
     document.getElementById("Button4").onclick = function(){phi += dr;};
     document.getElementById("Button5").onclick = function(){phi -= dr;};
+		*/
 
     document.getElementById("Button6").onclick = function(){
         numTimesToSubdivide++;
@@ -240,7 +418,9 @@ window.onload = function init() {
         normalsArray = [];
         init();
     };
-
+		document.getElementById("Button8").onclick = function(){image = image2;};
+		document.getElementById("Button9").onclick = function(){image = image5;};
+		document.getElementById("Button10").onclick = function(){image = image6;};
 
     gl.uniform4fv( gl.getUniformLocation(program,
        "ambientProduct"),flatten(ambientProduct) );
@@ -440,18 +620,20 @@ window.onload = function init() {
 
     };
 
+
+
+
+
     render();
 }
 
 
 function render() {
+		configureTexture(image);
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    eye = vec3(radius*Math.sin(theta)*Math.cos(phi),
-        radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
-
-
+    eye = vec3(radius*Math.sin(theta)*Math.cos(phi),radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
 
     modelViewMatrix = lookAt(eye, at , up);
     projectionMatrix = ortho(left, right, bottom, ytop, near, far);
@@ -459,9 +641,9 @@ function render() {
     //gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( modelViewMatrixLoc, false, flatten(mvMatrix) );
     gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix) );
-
+		gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertexCylinderBuffer.numberOfVertices);
     for( var i=0; i<index; i+=3)
-        gl.drawArrays( gl.TRIANGLES, i, 3 );
+        gl.drawArrays( gl.TRIANGLES_STRIP, i, 2 );
 
     window.requestAnimFrame(render);
 }

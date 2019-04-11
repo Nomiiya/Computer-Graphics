@@ -1,3 +1,8 @@
+<!--
+===========================================
+============ Mark Buenaflor================
+===========================================
+-->
 <!DOCTYPE html>
 <html>
 
@@ -14,7 +19,6 @@ uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform vec4 lightPosition;
 uniform float shininess;
-
 
 void
 main()
@@ -50,19 +54,8 @@ main()
 	specular = vec4(0.0, 0.0, 0.0, 1.0);
     }
 
-
-		gl_PointSize = 10.0;
     gl_Position = projectionMatrix * modelViewMatrix * pos4D;
-
-	// play
-	//diffuse = vec4(0.0, 0.0, 0.0, 1.0);
-	//ambient = vec4(0.0, 0.0, 0.0, 1.0);
-	//specular = vec4(0.0, 0.0, 0.0, 1.0);
-
     fColor = ambient + diffuse +specular;
-
-
-
     fColor.a = 1.0;
 }
 </script>
@@ -87,7 +80,11 @@ main()
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
-<script type="text/javascript" src="shadedSphere1.js"></script>
+<script type="text/javascript" src="Buenaflor_HW3.js"></script>
+<script type="text/javascript" src="Buenaflor_Geometry.js"></script>
+<script type="text/javascript" src="curve.js"></script>
+<script type="text/javascript" src="texture.js"></script>
+<script type="text/javascript" src="mouse.js"></script>
 
 
 
@@ -98,36 +95,24 @@ Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 
 <div>
-<button id = "Button0">Increase R</button>
-<button id = "Button1">Decrease R</button>
-</div>
-
-<div>
-<button id = "Button2">Increase theta</button>
-<button id = "Button3">Decrease theta</button>
-<button id = "Button4">Increase phi</button>
-<button id = "Button5">Decrease phi</button>
-</div>
-<div>
 <button id = "Button6">Increase Subdivisions</button>
 <button id = "Button7">Decrease Subdivisions</button>
-</div>
-
 <div>
-Program Features:
-<ul>
-<li>Sphere centered at origin with radius 1</li>
-<li>True normals calculated from vertices (special property of sphere)</li>
-<li>Orthographic projection</li>
-<li>Modelview matrix consists of LookAt transformations</li>
-<li>Eye location calculated from spherical coordinates based on R, theta, phi input </li>
-<li>(Initialize Eye on z axis) </li>
-<li>Light located at [1,1,1] wrt eye coordinates (defined in js)</li>
-<li>Lighting calculation done in eye coordinates in vertex shader </li>
-<li>Careful with too many subdivisions -- really slows it down </li>
-<li>See sphere generation code to close up sphere; open demos front/back face triangle concept </li>
-<li>Inspector / Console for more output </li>
-</ul>
+<button id = "Button1">Object 1</button>
+<button id = "Button2">Object 2</button>
+<div><button id = "Button8">Chrome</button> Shiny Chrome Material</div>
+<div><button id = "Button9">Emerald</button> Shiny Emerald Material</div>
+<div><button id = "Button10">Red Rubber</button> Rubber in the color red</div>
+
+<div class = "slidecontainer">
+  <p> FOV &nbsp 10%  <input type="range" min="1" max="100" value="50"> 100%</p>
+</div>
+<div><b>
+	CSE470 Homework 3: Mark Buenaflor</p>
+	Date: 04/04/2019</p>
+	Program Description:</p>
+			This program has SOR objects that is using the phong lighting model.</p>
+</b></div>
 </div>
 </body>
 </html>

@@ -4,9 +4,6 @@ var gl;
 
 var NumVertices  = 36;
 
-
-
-
 var points = [];
 var colors = [];
 
