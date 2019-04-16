@@ -1,0 +1,8 @@
+Steps:
+  Make a plane with a color
+  Make a box above the plane
+  Make the box move above the plane
+  Add Legs to the box
+  Add a Head to the box
+  Make the whole box+attachments move around the plane
+  Add the Textures to the whole thing.
