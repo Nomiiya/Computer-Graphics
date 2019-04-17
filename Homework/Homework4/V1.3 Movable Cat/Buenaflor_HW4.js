@@ -18,8 +18,14 @@ var animate = false;
 var delay = 20;
 
 // ================================================== 
-//             Phong Illumination
+// Tri Function: Adds given vertices to points Array
 // ==================================================
+function tri(a, b, c){
+  pointsArray.push(vertices[a]); 
+  pointsArray.push(vertices[b]); 
+  pointsArray.push(vertices[c]);
+  
+}
 
 // ================================================
 //             Cat Hierarchal Items
@@ -47,9 +53,6 @@ var frontLeftLegID = 1;
 var FLLHeight = 1.0;
 var FLLWidth = 0.5;
 var FLLColor = vec4(0.0, 0.6, 1.0, 1.0);
-// Translation var FLL
-var rotFLL= 1;
-var raisedFLL = false;
 
 // FRL
 var frontRightLegID = 2;
@@ -62,9 +65,6 @@ var backLeftLegID = 3;
 var BLLHeight = 1.0;
 var BLLWidth = 0.5;
 var BLLColor = vec4(0.4, 0.6, 1.0, 1.0);
-// Back Leg Translate
-var rotBLL = 1;
-var raisedBLL = false;
 
 // BRL
 var backRightLegID = 4;
@@ -78,14 +78,12 @@ var legColor = vec4( 0.6, 0.8 , 1.0, 1.0);
 // Tail
 var tailID = 5;
 var tailHeight = 1;
-var tailWidth = 1;
+var tailWidth = 0.5;
 // Tail2
 var tail2ID = 6;
 var tail2Height =0.7;
 var tail2Width = 0.5;
 var tailColor = vec4( 0.4, 0.4, 1.0, 1.0);
-// Tail Translate
-var rotTail = 1;
 
 
 // Head
@@ -154,7 +152,7 @@ function cube()
 
 function traverse(Id) {
   if(Id == null) return; 
-  //if(animate) theta[torsoID] +=10;
+  if(animate) theta[torsoID] +=10;
   stack.push(modelViewMatrix);
   modelViewMatrix = mult(modelViewMatrix, figure[Id].transform);
   figure[Id].render();
@@ -227,59 +225,14 @@ function head(){
   for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
 }
 
-function rotateLimb(ID){
-  switch(ID){
-    case frontLeftLegID:
-      if(rotFLL < 3 && !raisedFLL){
-        rotFLL += 0.05;
-        if(rotFLL >= 3){
-          raisedFLL = true;
-        }
-      }
-      if(rotFLL > 1 && raisedFLL){
-        rotFLL -= 0.05;
-        if(rotFLL <= 1){
-          raisedFLL = false;
-        }
-      }
-      initNodes(frontLeftLegID);
-      initNodes(frontRightLegID);
-      break;
-    case backLeftLegID:
-      if(rotBLL > 0.3 && !raisedFLL){
-        rotBLL -= 0.03;
-        if(rotBLL <= -2){
-          raisedBLL = true;
-        }
-      }
-      if(rotBLL < 1 && raisedFLL){
-        rotBLL += 0.03;
-        if(rotBLL >= 1){
-          raisedBLL = false;
-        }
-      }
-      initNodes(backLeftLegID);
-      initNodes(backRightLegID);
-      break;
-    case tailID:
-      if(rotBLL > 0.3 && !raisedFLL){
-        rotBLL -= 0.03;
-        if(rotBLL <= -2){
-          raisedBLL = true;
-        }
-      }
-      if(rotBLL < 1 && raisedFLL){
-        rotBLL += 0.03;
-        if(rotBLL >= 1){
-          raisedBLL = false;
-        }
-      }
-      initNodes(backLeftLegID);
-      initNodes(backRightLegID);
-      break;
-  }
-}
-
+/*
+function eye1(){
+  instanceMatrix = mult(modelViewMatrix, translate(0.0, 1.0*eyeHeight, 0.0) );
+  instanceMatrix = mult(instanceMatrix, scale4( eyeWidth, eyeHeight, eyeWidth));
+  gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+	gl.uniform4fv(colorLoc, flatten(eyeColor) );
+  for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
+}*/
 
 // ===============================
 // Init Nodes, Starting States
@@ -293,40 +246,46 @@ function initNodes(ID){
     break;
   case frontLeftLegID:
     m = translate((torsoWidth + FLLWidth * -0.2 ), (1.5*FLLHeight), -1.0);
-  	m = mult(m, rotate(theta[frontLeftLegID], 1, rotFLL, 0));
+  	m = mult(m, rotate(theta[frontLeftLegID], 1, 1, 0));
     figure[frontLeftLegID] = createNode( m, FLL, frontRightLegID, null );
     break;
   case frontRightLegID:
     m = translate((torsoWidth + FRLWidth * -0.2 ), (1.5*FRLHeight), 0.5);
-    m = mult(m, rotate(theta[frontRightLegID], 1, rotFLL, 0));
+    m = mult(m, rotate(theta[frontRightLegID], 1, 1, 0));
     figure[frontRightLegID] = createNode( m, FRL, backLeftLegID, null );
     break;
   case backLeftLegID:
     m = translate(-(torsoWidth + BLLWidth * 0.2), (1.5*BLLHeight), -1.0);
-    m = mult(m, rotate(theta[backLeftLegID], 1, rotBLL, 0));
+    m = mult(m, rotate(theta[backLeftLegID], 1, 1, 0));
     figure[backLeftLegID] = createNode( m, BLL, backRightLegID, null );
     break;
   case backRightLegID:
     m = translate(-(torsoWidth + BRLWidth * 0.2), (1.5*BRLHeight), 0.5);
-    m = mult(m, rotate(theta[backRightLegID], 1, rotBLL, 0));
+    m = mult(m, rotate(theta[backRightLegID], 1, 1, 0));
     figure[backRightLegID] = createNode( m, BRL, tailID, null );
     break;
   case tailID:
-    m = translate(-(torsoWidth + tailWidth*2), (-0.5*tailHeight), 0.0);
+    m = translate(-(torsoWidth + tailWidth*3), (-0.5*tailHeight), 0.0);
     m = mult(m, rotate(theta[tailID], 1, 0, 0));
-    figure[tailID] = createNode( m, tail, headID, null );
+    figure[tailID] = createNode( m, tail, tail2ID, null );
     break;
-    /*
   case tail2ID:
     m = translate(-(torsoWidth + tail2Width*6), (-0.5*tail2Height), 0.0);
     m = mult(m, rotate(theta[tail2ID], 1, 0, 0));
     figure[tail2ID] = createNode( m, tail2, headID, null );
-    break;*/
+    break;
+  
   case headID:
     m = translate((torsoWidth + headWidth*3), (0.3 * headHeight), 0.0);
     m = mult(m, rotate(theta[headID], 1.1, 0, 0));
     figure[headID] = createNode( m, head, null, null );
     break;
+    /*
+  case eye1ID:
+    m = translate((torsoWidth + headWidth* 0.3), (-1.2 * eyeHeight), -0.3);
+    m = mult(m, rotate(theta[eye1ID], 1.1, 0, 0));
+    figure[eye1ID] = createNode( m, eye1, null, null );
+    break;  */
   }
 }
 //===================================================
@@ -352,6 +311,15 @@ function plane(){
 	gl.uniform4fv(colorLoc, flatten(planeColor) );
   for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
 }
+
+// ==================================================
+//              Animation Functions
+// ==================================================
+function animateCat(){
+  theta[torsoID] += 10;
+  console.log("Animate");
+}
+
 
 //========== Function Initialization ===============
 window.onload = function init() 
@@ -426,14 +394,7 @@ var render = function() {
   traverse(torsoID);
 
   if(animate){
-      theta[torsoID] += 1;
-      // Translate the legs
-      rotateLimb(frontLeftLegID);
-      rotateLimb(backLeftLegID);
-      
-      // Tranlate Tail
-      //rotateLimb(tailID);
-
+      theta[torsoID] += 0.000000002;
       console.log("Animating :  " + theta[torsoID]);
       initNodes(torsoID);
   }

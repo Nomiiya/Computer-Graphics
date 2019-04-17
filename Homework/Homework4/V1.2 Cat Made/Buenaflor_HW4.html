@@ -10,11 +10,6 @@
   uniform mat4 modelViewMatrix;
   uniform mat4 projectionMatrix;
   uniform vec4 color;
-  
-  // eye stuff
-  vec3 eyePoint = vec3(0.0, 0.0, 0.0);
-	//vec3 E = normalize( eyePoint - pos );
-
 
   varying vec4 fColor;
   void main()
@@ -43,7 +38,12 @@
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="Buenaflor_HW4.js"></script>
 
-
+<div id="slider0">
+torso angle -180 <input id="slide" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
 
 <body>
 <!--------------Canvas------------------->
@@ -52,9 +52,6 @@
     Date: 04/24/2019</p>
     Program Description:</p>
         This program has an avatar moving around a plane.</p>
-    <div>
-      <input type="checkbox" id="animateCheckBox"> animate <br>
-    </div>
   </b></div>
 <canvas id="gl-canvas" width="712"" height="712"
 Oops ... your browser doesn't support the HTML5 canvas element
