@@ -6,12 +6,12 @@
 <!------------Vertex Shader ------------->
 <script id="vertex-shader" type="x-shader/x-vertex">
   attribute  vec4 vPosition;
-  varying vec4 fColor;
-
+  
   uniform mat4 modelViewMatrix;
   uniform mat4 projectionMatrix;
   uniform vec4 color;
 
+  varying vec4 fColor;
   void main()
   {
       fColor = color;
@@ -38,6 +38,12 @@
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="Buenaflor_HW4.js"></script>
 
+<div id="slider0">
+torso angle -180 <input id="slide" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
 
 <body>
 <!--------------Canvas------------------->
