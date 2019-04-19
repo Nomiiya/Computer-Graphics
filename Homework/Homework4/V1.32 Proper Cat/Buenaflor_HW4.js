@@ -20,26 +20,10 @@ var delay = 20;
 // ================================================== 
 //             Phong Illumination
 // ==================================================
-var normalsArray = [];
-// Chrome
-var material1 = {
-    ambient: vec4(0.25, 0.25, 0.25, 1.0),
-    diffuse: vec4(0.4, 0.4, 0.4, 1.0),
-    specular: vec4(0.774597, 0.774597, 0.774597 , 1.0),
-    shininess: 0.6,
-}
-
-var ambientColor, diffuseColor, specularColor;
-
-var lightPosition = vec4(1.0, 1.0, 1.0, 1.0 );
-var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
-var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
-var lightSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
 
 // ================================================
 //             Cat Hierarchal Items
 // ================================================
-
 var numNodes = 11;
 
 // Changing theta can = z
@@ -118,6 +102,7 @@ var eyeWidth = 0.1;
 var eyeColor = vec4(0.1, 0.1, 0.1, 0.1);
 
 
+
 function scale4(a, b, c) {
   var result = mat4();
   result[0][0] = a;
@@ -149,41 +134,16 @@ var catVertices = [
  vec4(1.5, -0.75, -0.3, 1.0)  // Bottom Right  7
 ];
 
-function quad2(a, b, c, d){
-  normalsArray.push(catVertices[a]); 
-  normalsArray.push(catVertices[b]); 
-  normalsArray.push(catVertices[c]);     
-  normalsArray.push(catVertices[d]);
-
+function quad(a, b, c, d) {
   pointsArray.push(catVertices[a]); 
   pointsArray.push(catVertices[b]); 
   pointsArray.push(catVertices[c]);     
-  pointsArray.push(catVertices[d]); 
-}
-
-function quad(a, b, c, d) {
-  var ab = mix( a, b, 0.5);
-  var ac = mix( a, c, 0.5);
-  var ad = mix( a, d, 0.5);
-  var bc = mix( b, c, 0.5);
-  var bd = mix( b, d, 0.5);
-  var cd = mix( c, d, 0.5);
-
-  ab = normalize( ab, false);
-  ac = normalize( ac, false);
-  ad = normalize( ad, false);
-  bc = normalize( bc, false);
-  bd = normalize( bd, false);
-  cd = normalize( cd, false);
- 
-  quad2()
-   
+  pointsArray.push(catVertices[d]);  
 }
 
 
 function cube()
 {
-
  quad( 0, 1, 3, 2 ); // close side 
  quad( 2, 3, 7, 6 ); // right closure
  quad( 2, 0, 4, 6 ); // Top Side
@@ -408,22 +368,6 @@ window.onload = function init()
   program = initShaders( gl, "vertex-shader", "fragment-shader" );
   gl.useProgram( program );  
 
-  // ================================================== 
-  //             Phong Illumination
-  // ==================================================
-  ambientProduct = mult(lightAmbient, material1.ambient);
-  diffuseProduct = mult(lightDiffuse, material1.diffuse);
-  specularProduct = mult(lightSpecular, material1.specular);
-
-  var nBuffer = gl.createBuffer();
-  gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer);
-  gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
-
-  var vNormal = gl.getAttribLocation( program, "vNormal" );
-	console.log("vNormal = ",vNormal);
-  gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
-  gl.enableVertexAttribArray( vNormal);
-
   // ========== Buffer Initialization ==============
   instanceMatrix = mat4();
   projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
@@ -445,9 +389,9 @@ window.onload = function init()
   gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
   gl.bufferData( gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW );
 
-   var vPosition = gl.getAttribLocation( program, "vPosition");
-    gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(vPosition);
+  var vPosition = gl.getAttribLocation( program, "vPosition" );
+  gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
+  gl.enableVertexAttribArray( vPosition );
 
   // ========== Animate Function ================
   document.getElementById("animateCheckBox").onchange = function() {
@@ -462,16 +406,6 @@ window.onload = function init()
   };
 
   // ============ Uniform Variables ================
-  gl.uniform4fv( gl.getUniformLocation(program, 
-       "ambientProduct"),flatten(ambientProduct) );
-    gl.uniform4fv( gl.getUniformLocation(program, 
-       "diffuseProduct"),flatten(diffuseProduct) );
-    gl.uniform4fv( gl.getUniformLocation(program, 
-       "specularProduct"),flatten(specularProduct) );	
-    gl.uniform4fv( gl.getUniformLocation(program, 
-       "lightPosition"),flatten(lightPosition) );
-    gl.uniform1f( gl.getUniformLocation(program, 
-       "shininess"),material1.shininess );
   
   for(i=0; i<numNodes; i++) initNodes(i);
   render();
@@ -480,7 +414,6 @@ window.onload = function init()
 var render = function() {
   gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
   gl.clearColor(0, 0, 0, 0.8);
-
 
   plane();
   traverse(torsoID);

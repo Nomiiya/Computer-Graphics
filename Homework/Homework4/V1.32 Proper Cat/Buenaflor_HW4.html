@@ -5,49 +5,22 @@
 <html>
 <!------------Vertex Shader ------------->
 <script id="vertex-shader" type="x-shader/x-vertex">
-  attribute vec3 vPosition;
-  attribute vec3 vNormal;
-
+  attribute  vec4 vPosition;
+  
   uniform mat4 modelViewMatrix;
   uniform mat4 projectionMatrix;
   uniform vec4 color;
-  uniform vec4 lightPosition;
-  uniform float shininess;
+  
+  // eye stuff
+  vec3 eyePoint = vec3(0.0, 0.0, 0.0);
+	//vec3 E = normalize( eyePoint - pos );
 
-  uniform vec4 ambientProduct, diffuseProduct, specularProduct;
 
   varying vec4 fColor;
-
   void main()
   {
-    vec4 pos4D = vec4(vPosition, 1.0);
-	  vec4 nor4D = vec4(vNormal, 0.0);
-
-    //compute lighting in eye coordinates
-    vec3 pos = (modelViewMatrix * pos4D).xyz;
-    vec3 light = lightPosition.xyz;
-    vec3 L = normalize( light - pos );
-
-    // eye stuff
-    vec3 eyePoint = vec3(0.0, 0.0, 0.0);
-	  vec3 E = normalize( eyePoint - pos );
-    // halfway vector
-    vec3 H = normalize( L + E );
-
-    // Transform vertex normal into eye coordinates
-    vec3 N = normalize( (modelViewMatrix*nor4D).xyz);
-
-    // Compute terms in the illumination equation
-    vec4 ambient = ambientProduct;
-
-    float Kd = max( dot(L, N), 0.0 );
-    vec4  diffuse = Kd*diffuseProduct;
-
-    float Ks = pow( max(dot(N, H), 0.0), shininess );
-    vec4  specular = Ks * specularProduct;
-
-    fColor = color;
-    gl_Position = projectionMatrix * modelViewMatrix * pos4D;
+      fColor = color;
+      gl_Position = projectionMatrix * modelViewMatrix * vPosition;
   }
 </script>
 
