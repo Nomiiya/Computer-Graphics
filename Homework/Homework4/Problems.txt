@@ -1,2 +1,12 @@
-* Can't rotate the tail
-* Can't rotate the head
+* Does this cat satisfy the requirements?
+* Is the movement good ( Is that simple circle movement satisfactory? And the joint movement)
+* Is this plane good enough?
+
+* Do we have to use an image for the texture?
+* Go to office hours for phong illumination
+
+Notes:
+   Solved? 
+	* Can't rotate the tail
+	* Can't rotate the head
+   To move the tail (subtract from y && rotate y) --> same with the head

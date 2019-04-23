@@ -33,7 +33,7 @@ var delay = 20;
 var numNodes = 11;
 
 // Changing theta can = z
-var theta = [0, 180, 180, 180, 180, 0, 0, 0, 180, 180, 0];
+var theta = [0, 180, 180, 180, 180, 180, 180, 180, 180, 180, 0];
 var stack = [];
 var figure = [];
 
@@ -317,12 +317,12 @@ function initNodes(ID){
     figure[backRightLegID] = createNode( m, BRL, tailID, null );
     break;
   case tailID:
-    m = translate(-(torsoWidth + tailWidth*2), (-0.5*tailHeight), 0.0);
+    m = translate(-(torsoWidth + tailWidth* 2.3 ), (4.5* tailHeight), 12.0);
     m = mult(m, rotate(theta[tailID], 1, 0, 0));
     figure[tailID] = createNode( m, tail, headID, null );
     break;
   case headID:
-    m = translate((torsoWidth + headWidth*3), (0.3 * headHeight), 0.0);
+    m = translate((torsoWidth + headWidth*3.5), (0.75 * headHeight), 12.0);
     m = mult(m, rotate(theta[headID], 1.1, 0, 0));
     figure[headID] = createNode( m, head, null, null );
     break;
