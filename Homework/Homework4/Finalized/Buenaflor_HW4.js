@@ -582,6 +582,16 @@ window.onload = function init()
   omegaLoc = gl.getUniformLocation(program, "omega"); 
 
 
+  // Audio loop
+  var audioControl = document.getElementById("gao");
+  audioControl.onended = function(){
+    this.currentTime = 0;
+    var delay = setTimeout(function(){
+      audioControl.play();
+      clearTimeout(delay);}, 2500);
+    }
+  
+
   for(i=0; i<numNodes; i++) initNodes(i);
   render();
 }

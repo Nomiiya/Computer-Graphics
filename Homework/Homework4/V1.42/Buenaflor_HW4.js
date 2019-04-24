@@ -20,51 +20,12 @@ var delay = 20;
 // ================================================== 
 //             Phong Illumination
 // ==================================================
-var lightPosition = vec4(1.0, 1.0, 1.0, 1.0 );  
 
-var lightAmbient = vec4(1.0, 1.0, 1.0, 1.0 );
-var lightDiffuse = vec4( 1.0, 1.0, 1.0, 1.0 );
-var lightSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
 
-var materialAmbient = vec4( 1.0, 1.0, 1.0, 1.0 );
-var materialDiffuse = vec4( 1.0, 1.0, 0.0, 1.0);
-var materialSpecular = vec4( 1.0, 1.0, 1.0, 1.0 );
-var materialShininess = 100.0;
-
-var ctm;
-var ambientColor, diffuseColor, specularColor;
-var viewerPos;
 
 // ================================================== 
 //             Texture
 // ==================================================
-var image = new Image();
-var image2 = new Image();
-
-var texSize = 64;
-var texCoordsArray = [];
-var texture;
-var texture2;
-
-// demo: change 1,1 tex coord to 0.5, 0.5 
-var texCoord = [
-    vec2(0, 0),
-    vec2(0, 1),
-    vec2(1,1),
-    vec2(1, 0)
-];
-
-function configureTexture( image ) {
-    texture = gl.createTexture();
-    gl.bindTexture( gl.TEXTURE_2D, texture );
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-    gl.generateMipmap( gl.TEXTURE_2D );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,  gl.NEAREST_MIPMAP_LINEAR );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-    
-    gl.uniform1i(gl.getUniformLocation(program, "texture"), 0);
-}
 
 // ================================================
 //             Cat Hierarchal Items
@@ -130,10 +91,7 @@ var tail2Height =0.7;
 var tail2Width = 0.5;
 var tailColor = vec4( 0.4, 0.4, 1.0, 1.0);
 // Tail Translate
-var rotTail = 0;
-var xTail = 1;
-var yTail = 3.5;
-var raisedTail = false;
+var rotTail = 1;
 
 
 // Head
@@ -141,10 +99,6 @@ var headID = 7;
 var headHeight = 5;
 var headWidth = 0.5;
 var headColor = vec4(0.2, 0.4, 0.4, 0.5);
-var rotHead = 0;
-var xHead = 1.0;
-var zHead = 12.0;
-var headTilted = false;
 
 // Eyes
 var eye1ID = 8;
@@ -186,66 +140,11 @@ var catVertices = [
  vec4(1.5, -0.75, -0.3, 1.0)  // Bottom Right  7
 ];
 
-// ===============================
-
-function quad2(a, b, c, d) {
-  var t1 = subtract(catVertices[b], catVertices[a]);
-     var t2 = subtract(catVertices[c], catVertices[b]);
-     var normal = cross(t1, t2);
-     var normal = vec3(normal);
-     normal = normalize(normal);
-
-  pointsArray.push(catVertices[a]);
-  texCoordsArray.push(texCoord[0]); 
-  pointsArray.push(catVertices[b]);
-  texCoordsArray.push(texCoord[1]);
-  pointsArray.push(catVertices[c]);
-  texCoordsArray.push(texCoord[2]);     
-  pointsArray.push(catVertices[d]);
-  texCoordsArray.push(texCoord[3]);  
-}
-
-function configureTexture2( image ) {
-    texture = gl.createTexture();
-    gl.bindTexture( gl.TEXTURE_2D, texture );
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB, 
-         gl.RGB, gl.UNSIGNED_BYTE, image );
-    gl.generateMipmap( gl.TEXTURE_2D );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, 
-                      gl.NEAREST_MIPMAP_LINEAR );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-    
-    gl.uniform1i(gl.getUniformLocation(program, "texture"), 0);
-}
-
-function cube2()
-{
- quad( 0, 1, 3, 2 ); // close side 
- quad( 2, 3, 7, 6 ); // right closure
- quad( 2, 0, 4, 6 ); // Top Side
- quad( 7, 6, 4, 5 ); // far side
- quad( 7, 5, 1, 3 ); // bottom
- quad( 5, 4, 0, 1 ); // left closure
-}
-
-// ===============================
-
 function quad(a, b, c, d) {
-  var t1 = subtract(catVertices[b], catVertices[a]);
-     var t2 = subtract(catVertices[c], catVertices[b]);
-     var normal = cross(t1, t2);
-     var normal = vec3(normal);
-     normal = normalize(normal);
-
-  pointsArray.push(catVertices[a]);
-  texCoordsArray.push(texCoord[0]); 
-  pointsArray.push(catVertices[b]);
-  texCoordsArray.push(texCoord[1]);
-  pointsArray.push(catVertices[c]);
-  texCoordsArray.push(texCoord[2]);     
-  pointsArray.push(catVertices[d]);
-  texCoordsArray.push(texCoord[3]);  
+  pointsArray.push(catVertices[a]); 
+  pointsArray.push(catVertices[b]); 
+  pointsArray.push(catVertices[c]);     
+  pointsArray.push(catVertices[d]);  
 }
 
 
@@ -368,43 +267,20 @@ function rotateLimb(ID){
       initNodes(backRightLegID);
       break;
     case tailID:
-      // roTail= 1 || ytail = 2.5
-      if(rotTail < 0.001 && !raisedTail){
-        rotTail -= 0.02;
-        //if(xTail != 1)
-        xTail -= 0.1;
-        yTail += 0.01;
-        if(rotTail <= -0.8){
-          raisedTail = true;
+      if(rotBLL > 0.3 && !raisedFLL){
+        rotBLL -= 0.03;
+        if(rotBLL <= -2){
+          raisedBLL = true;
         }
       }
-      if(rotTail < 0.0 && raisedFLL){
-        rotTail += 0.02;
-        xTail += 0.1;
-        yTail -= 0.01;
-        if(rotTail > 0.0){
-          raisedTail = false;
-          //rotTail -= 0.03;
+      if(rotBLL < 1 && raisedFLL){
+        rotBLL += 0.03;
+        if(rotBLL >= 1){
+          raisedBLL = false;
         }
       }
-      initNodes(tailID);
-      break;
-    case headID:
-      if( (rotHead <= 0 && !headTilted && rotHead < 0.4) || (rotHead > 0 && !headTilted && rotHead < 0.4)){
-          rotHead += 0.01;
-          xHead -= 0.113;
-          if(rotHead >= 0.4){
-            headTilted = true;
-          }
-      }
-      if( (rotHead >= 0.4 && headTilted) || (rotHead > 0.0 && headTilted)){
-        rotHead -= 0.01;
-        xHead += 0.113;
-        if(rotHead <= 0.0){
-            headTilted = false;
-        }
-      }
-      initNodes(headID);
+      initNodes(backLeftLegID);
+      initNodes(backRightLegID);
       break;
   }
 }
@@ -415,14 +291,6 @@ function rotateLimb(ID){
 // ===============================
 function initNodes(ID){
   var m = mat4();
-   image.src = "SA2011_black.gif"
-   image2.src = "";
-   //image.src = ""
-    image.onload = function() {
-      
-        configureTexture( image );
-       // configureTexture( image2 );
-    }
   switch(ID){
   case torsoID:
     m = rotate(theta[torsoID], 0, 1, 0 );
@@ -449,16 +317,13 @@ function initNodes(ID){
     figure[backRightLegID] = createNode( m, BRL, tailID, null );
     break;
   case tailID:
-    m = translate(-(torsoWidth + tailWidth+ xTail ), (yTail+ tailHeight), 12.0);
-    m = mult(m, rotate(theta[tailID], 1, rotTail, 0));
+    m = translate(-(torsoWidth + tailWidth* 2.3 ), (4.5* tailHeight), 12.0);
+    m = mult(m, rotate(theta[tailID], 1, 0, 0));
     figure[tailID] = createNode( m, tail, headID, null );
     break;
   case headID:
-  // 4.0
-  // 10.0
-  // 0.5
-    m = translate((torsoWidth + headWidth + xHead), (-1.0 + headHeight), zHead);
-    m = mult(m, rotate(theta[headID], 1.0, 0, rotHead));
+    m = translate((torsoWidth + headWidth*3.5), (0.75 * headHeight), 12.0);
+    m = mult(m, rotate(theta[headID], 1.1, 0, 0));
     figure[headID] = createNode( m, head, null, null );
     break;
   }
@@ -480,10 +345,6 @@ var planeWidth = 3.5;
 var planeColor = vec4(0.5, 0.5, 0.6, 1.0);
 
 function plane(){
-  //image.src = "SA2011_black.gif"
-  //image.onload = function() { 
-  //    configureTexture2( image );
-  //}
   instanceMatrix = mult(modelViewMatrix, translate(-1.5, planeHeight, 0) );
   instanceMatrix = mult(instanceMatrix, scale4( 1.8* planeWidth, 5 * planeHeight, 7* planeWidth));
   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
@@ -538,34 +399,6 @@ window.onload = function init()
   gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
   gl.enableVertexAttribArray( vPosition );
 
-  var tBuffer = gl.createBuffer();
-  gl.bindBuffer( gl.ARRAY_BUFFER, tBuffer );
-  gl.bufferData( gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW );
-    
-  var vTexCoord = gl.getAttribLocation( program, "vTexCoord" );
-  gl.vertexAttribPointer( vTexCoord, 2, gl.FLOAT, false, 0, 0 );
-  gl.enableVertexAttribArray( vTexCoord );
-
- 
-  // Phong lighting stuff 
-  viewerPos = vec3(0.0, 0.0, -20.0 );
-	ambientProduct = mult(lightAmbient, materialAmbient);
-    diffuseProduct = mult(lightDiffuse, materialDiffuse);
-    specularProduct = mult(lightSpecular, materialSpecular);
-
-    gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"),
-       flatten(ambientProduct));
-    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"),
-       flatten(diffuseProduct) );
-    gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), 
-       flatten(specularProduct) );	
-    gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), 
-       flatten(lightPosition) );
-     gl.uniform1f(gl.getUniformLocation(program, 
-       "shininess"),materialShininess);
-
-    gl.uniformMatrix4fv( gl.getUniformLocation(program, "projectionMatrix"),
-       false, flatten(projectionMatrix));
   // ========== Animate Function ================
   document.getElementById("animateCheckBox").onchange = function() {
     var checkBox = document.getElementById("animateCheckBox");
@@ -579,9 +412,7 @@ window.onload = function init()
   };
 
   // ============ Uniform Variables ================
-  omegaLoc = gl.getUniformLocation(program, "omega"); 
-
-
+  
   for(i=0; i<numNodes; i++) initNodes(i);
   render();
 }
@@ -590,9 +421,9 @@ var render = function() {
   gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT );
   gl.clearColor(0, 0, 0, 0.8);
 
-  
-  traverse(torsoID);
   plane();
+  traverse(torsoID);
+
   if(animate){
       theta[torsoID] += 1;
       // Translate the legs
@@ -600,14 +431,10 @@ var render = function() {
       rotateLimb(backLeftLegID);
       
       // Tranlate Tail
-      rotateLimb(tailID);
-      
-      // Translate Head
-      rotateLimb(headID);
-      //console.log("Rotate Head :  " + rotHead);
-      //console.log("Rotate True :  " + headTilted);
-      initNodes(torsoID);
+      //rotateLimb(tailID);
 
+      console.log("Animating :  " + theta[torsoID]);
+      initNodes(torsoID);
   }
 
   setTimeout(function (){requestAnimFrame(render);}, delay);

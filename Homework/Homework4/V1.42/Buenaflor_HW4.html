@@ -1,0 +1,66 @@
+<!-------------------------------------------------------->
+<!--Mark Buenaflor: Homework 5 CSE470: Computer Graphics-->
+<!-------------------------------------------------------->
+
+<html>
+<!------------Vertex Shader ------------->
+<script id="vertex-shader" type="x-shader/x-vertex">
+  attribute  vec4 vPosition;
+  
+  uniform mat4 modelViewMatrix;
+  uniform mat4 projectionMatrix;
+  uniform vec4 color;
+  
+  // eye stuff
+  vec3 eyePoint = vec3(0.0, 0.0, 0.0);
+	//vec3 E = normalize( eyePoint - pos );
+
+  varying vec4 fColor;
+
+  //varying vec2 fTexCoord;
+  //uniform vec3 omega;
+
+  void main()
+  {
+      fColor = color;
+      gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+  }
+</script>
+
+
+<!------------Fragment Shader ------------->
+<script id="fragment-shader" type="x-shader/x-fragment">
+  precision mediump float;
+
+  varying  vec4 fColor;
+
+  void main()
+  {
+      gl_FragColor = fColor;
+  } 
+</script>
+
+<!----------Script Additions-------------->
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="Buenaflor_HW4.js"></script>
+
+
+
+<body>
+<!--------------Canvas------------------->
+<div><b>
+    CSE470 Homework 4 Mark Buenaflor</p>
+    Date: 04/24/2019</p>
+    Program Description:</p>
+        This program has an avatar moving around a plane.</p>
+    <div>
+      <input type="checkbox" id="animateCheckBox"> animate <br>
+    </div>
+  </b></div>
+<canvas id="gl-canvas" width="712"" height="712"
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+</body>
+</html>
