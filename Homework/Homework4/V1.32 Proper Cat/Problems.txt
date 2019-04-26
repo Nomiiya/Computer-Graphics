@@ -1,2 +1,0 @@
-* Can't rotate the tail
-* Can't rotate the head
